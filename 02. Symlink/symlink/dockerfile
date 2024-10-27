@@ -1,0 +1,40 @@
+# Use an official PHP image with Apache
+FROM php:8.2-apache
+
+# Install dependencies for zip and libzip before installing the PHP zip extension
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    zip \
+    unzip
+
+# Install the PHP zip extension after installing libzip
+RUN docker-php-ext-install zip
+
+# Copy the PHP code into the container
+COPY ./src /var/www/html/
+
+# Set the working directory to match the Apache root
+WORKDIR /var/www/html
+
+# Create the upload directory and set permissions
+RUN mkdir -p /var/www/html/upload \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Copy custom Apache configuration
+COPY docker-php.conf /etc/apache2/sites-available/000-default.conf
+
+# Enable Apache mod_rewrite if necessary
+RUN a2enmod rewrite
+
+# Restart Apache to apply the new configuration
+RUN service apache2 restart
+
+# Create the flag.txt file in the root directory
+RUN echo "{Th1s_1s_y4ur_flag_n1ce_try}" > /flag.txt
+
+# Expose the default HTTP port
+EXPOSE 80
+
+# Start Apache in the foreground to keep the container running
+CMD ["apache2-foreground"]

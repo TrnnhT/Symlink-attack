@@ -1,0 +1,11 @@
+version: '3'
+services:
+  php-apache:
+    build:
+      context: ./symlink
+      dockerfile: Dockerfile
+    ports:
+      - "2222:80"
+    volumes:
+      - ./symlink/src:/var/www/html
+    restart: always
